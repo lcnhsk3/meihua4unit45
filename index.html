@@ -1,0 +1,1036 @@
+<!doctype html>
+<html lang="id">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Latihan Kosakata Meihua - Tembak Balon</title>
+  <script src="/_sdk/data_sdk.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            overflow: hidden;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        .container {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            position: relative;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 32px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            margin: 8px 0 0 0;
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .game-area {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .start-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .start-screen h2 {
+            font-size: 28px;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .start-screen p {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            font-size: 18px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #48bb78;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #38a169;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .question-screen {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .question-header {
+            margin-bottom: 15px;
+        }
+
+        .question-number {
+            font-size: 14px;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .timer-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .timer {
+            font-size: 48px;
+            font-weight: bold;
+            color: #667eea;
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            padding: 15px 40px;
+            border-radius: 50%;
+            border: 4px solid #667eea;
+            min-width: 100px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .timer.warning {
+            color: #f56565;
+            border-color: #f56565;
+            animation: pulse 0.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .question-text {
+            font-size: 32px;
+            color: #333;
+            text-align: center;
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            padding: 20px;
+            border-radius: 12px;
+            border: 3px solid #667eea;
+            font-weight: bold;
+            letter-spacing: 1px;
+            line-height: 1.4;
+        }
+
+        .question-text.vocabulary-mode {
+            font-size: 48px;
+            letter-spacing: 2px;
+        }
+
+        .question-text.sentence-mode {
+            font-size: 28px;
+            font-family: 'SimSun', '宋体', serif;
+        }
+
+        .balloons-area {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            padding: 15px 0;
+            position: relative;
+        }
+
+        .balloon {
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .balloon:hover {
+            transform: translateY(-10px) scale(1.05);
+        }
+
+        .balloon-body {
+            width: 100%;
+            height: 100%;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            position: relative;
+            padding: 15px;
+        }
+
+        .balloon:nth-child(1) .balloon-body {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8787 100%);
+        }
+
+        .balloon:nth-child(2) .balloon-body {
+            background: linear-gradient(135deg, #4ecdc4 0%, #44a8a0 100%);
+        }
+
+        .balloon:nth-child(3) .balloon-body {
+            background: linear-gradient(135deg, #ffd93d 0%, #ffb703 100%);
+        }
+
+        .balloon:nth-child(4) .balloon-body {
+            background: linear-gradient(135deg, #a8e6cf 0%, #7fb685 100%);
+        }
+
+        .balloon:nth-child(5) .balloon-body {
+            background: linear-gradient(135deg, #ff9ff3 0%, #feca57 100%);
+        }
+
+        .balloon:nth-child(6) .balloon-body {
+            background: linear-gradient(135deg, #48dbfb 0%, #0abde3 100%);
+        }
+
+        .balloon:nth-child(7) .balloon-body {
+            background: linear-gradient(135deg, #ff9ff3 0%, #ff6348 100%);
+        }
+
+        .balloon:nth-child(8) .balloon-body {
+            background: linear-gradient(135deg, #ee5a6f 0%, #c44569 100%);
+        }
+
+        .balloon-text {
+            font-size: 36px;
+            font-family: 'SimSun', '宋体', serif;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+            word-wrap: break-word;
+            line-height: 1.3;
+        }
+
+        .balloon-string {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 25px;
+            background: #999;
+        }
+
+        .balloon.popped {
+            animation: pop 0.5s ease forwards;
+        }
+
+        @keyframes pop {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(0);
+                opacity: 0;
+            }
+        }
+
+        .feedback {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            font-weight: bold;
+            animation: feedbackShow 1s ease;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .feedback.correct {
+            color: #48bb78;
+        }
+
+        .feedback.incorrect {
+            color: #f56565;
+        }
+
+        @keyframes feedbackShow {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .next-button-container {
+            display: none;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .results-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .results-screen h2 {
+            font-size: 32px;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .score-display {
+            font-size: 64px;
+            font-weight: bold;
+            color: #48bb78;
+            margin: 20px 0;
+        }
+
+        .score-text {
+            font-size: 24px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .arrow-cursor {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            pointer-events: none;
+            z-index: 9999;
+            display: none;
+        }
+
+        .arrow-cursor svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+        }
+
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .big-x {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 200px;
+            color: #f56565;
+            font-weight: bold;
+            pointer-events: none;
+            z-index: 1001;
+            text-shadow: 0 0 30px rgba(245, 101, 101, 0.8);
+            animation: bigXShow 0.8s ease forwards;
+        }
+
+        @keyframes bigXShow {
+            0% {
+                transform: translate(-50%, -50%) scale(0) rotate(0deg);
+                opacity: 0;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.3) rotate(180deg);
+                opacity: 1;
+            }
+            70% {
+                transform: translate(-50%, -50%) scale(0.9) rotate(180deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1) rotate(180deg);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .balloons-area {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .question-text {
+                font-size: 36px;
+            }
+
+            .big-x {
+                font-size: 120px;
+            }
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="arrow-cursor" id="arrowCursor">
+   <svg viewbox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L4 10L8 10L8 22L16 22L16 10L20 10L12 2Z" fill="#764ba2" stroke="white" stroke-width="1" />
+   </svg>
+  </div>
+  <div class="container">
+   <header class="header">
+    <h1 id="gameTitle">Latihan Kosakata Meihua by 欧老师 (08994477998)</h1>
+    <p id="gameSubtitle">Tembak Balon dengan Panah</p>
+   </header>
+   <main class="game-area">
+    <div class="progress-bar">
+     <div class="progress-fill" id="progressBar" style="width: 0%"></div>
+    </div>
+    <div class="start-screen" id="startScreen">
+     <h2 id="instructionText">Tembak balon dengan arti yang benar!</h2>
+     <p>Pilih mode latihan yang ingin Anda mainkan</p>
+     <div style="display: flex; gap: 20px; margin-top: 20px;"><button class="btn btn-primary" id="vocabButton">Latihan Kosakata</button> <button class="btn btn-primary" id="sentenceButton">Melengkapi Kalimat</button>
+     </div>
+    </div>
+    <div class="question-screen" id="questionScreen">
+     <div class="question-header">
+      <div class="question-number" id="questionNumber">
+       Soal 1 dari 40
+      </div>
+      <div class="timer-container">
+       <div class="timer" id="timer">
+        10
+       </div>
+      </div>
+      <div class="question-text" id="questionText"></div>
+     </div>
+     <div class="balloons-area" id="balloonsArea"></div>
+     <div class="next-button-container" id="nextButtonContainer"><button class="btn btn-secondary" id="nextButton">Soal Berikutnya</button>
+     </div>
+    </div>
+    <div class="results-screen" id="resultsScreen">
+     <h2 id="resultsTitle">Hasil Latihan</h2>
+     <div class="score-display" id="scoreDisplay">
+      0/40
+     </div>
+     <div class="score-text">
+      Jawaban Benar
+     </div><button class="btn btn-primary" id="restartButton">Ulangi Latihan</button>
+    </div>
+   </main>
+  </div>
+  <script>
+        const defaultConfig = {
+            game_title: "Latihan Kosakata Meihua",
+            game_subtitle: "Tembak Balon dengan Panah",
+            instruction_text: "Tembak balon dengan arti yang benar!",
+            start_button_text: "Mulai Latihan",
+            next_button_text: "Soal Berikutnya",
+            results_title: "Hasil Latihan",
+            restart_button_text: "Ulangi Latihan",
+            background_color: "#667eea",
+            surface_color: "#ffffff",
+            text_color: "#333333",
+            primary_action_color: "#667eea",
+            secondary_action_color: "#48bb78"
+        };
+
+        const vocabularyQuestions = [
+            { id: "q1", text: "membuka", options: ["开", "关", "去", "打", "坐", "站", "看", "写"], correct: "开" },
+            { id: "q2", text: "menutup", options: ["开", "关", "去", "来", "睡", "起", "吃", "喝"], correct: "关" },
+            { id: "q3", text: "suara keras", options: ["小声", "大声", "快", "慢", "高", "低", "大", "小"], correct: "大声" },
+            { id: "q4", text: "suara pelan", options: ["大声", "小声", "快", "慢", "大", "小", "高", "低"], correct: "小声" },
+            { id: "q5", text: "mencari", options: ["找", "看", "买", "卖", "带", "取", "放", "扔"], correct: "找" },
+            { id: "q6", text: "kucing", options: ["狗", "猫", "鸟", "鱼", "兔", "鸡", "鸭", "马"], correct: "猫" },
+            { id: "q7", text: "hilang", options: ["找到", "丢", "找", "拿", "放", "取", "看", "买"], correct: "丢" },
+            { id: "q8", text: "cemas", options: ["高兴", "难过", "着急", "生气", "害怕", "开心", "累", "饿"], correct: "着急" },
+            { id: "q9", text: "dapur", options: ["卧室", "客厅", "厨房", "卫生间", "餐厅", "花园", "车库", "阳台"], correct: "厨房" },
+            { id: "q10", text: "teman", options: ["老师", "朋友", "父母", "弟弟", "哥哥", "家人", "邻居", "客人"], correct: "朋友" },
+            { id: "q11", text: "teman sekelas", options: ["老师", "学生", "同学", "校长", "父母", "兄弟", "邻居", "医生"], correct: "同学" },
+            { id: "q12", text: "senang", options: ["难过", "生气", "高兴", "害怕", "着急", "累", "饿", "渴"], correct: "高兴" },
+            { id: "q13", text: "menemukan", options: ["找", "找到", "丢", "买", "卖", "拿", "放", "扔"], correct: "找到" },
+            { id: "q14", text: "memasak", options: ["吃", "喝", "做饭", "洗", "打扫", "睡觉", "学习", "玩"], correct: "做饭" },
+            { id: "q15", text: "jadi", options: ["因为", "所以", "但是", "或者", "如果", "当", "以前", "以后"], correct: "所以" },
+            { id: "q16", text: "pasti", options: ["可能", "一定", "不", "还没", "已经", "正在", "会", "能"], correct: "一定" },
+            { id: "q17", text: "sedikit", options: ["多", "少", "大", "小", "高", "低", "长", "短"], correct: "少" },
+            { id: "q18", text: "banyak", options: ["少", "多", "大", "小", "高", "低", "宽", "窄"], correct: "多" },
+            { id: "q19", text: "PR/tugas", options: ["书", "课", "作业", "考试", "成绩", "报告", "学校", "班"], correct: "作业" },
+            { id: "q20", text: "perpustakaan", options: ["学校", "图书馆", "书店", "教室", "办公室", "医院", "市场", "公园"], correct: "图书馆" },
+            { id: "q21", text: "berbicara", options: ["写", "读", "说话", "听", "看", "想", "学", "教"], correct: "说话" },
+            { id: "q22", text: "menyanyi", options: ["跳舞", "唱歌", "玩", "运动", "跑", "走", "坐", "站"], correct: "唱歌" },
+            { id: "q23", text: "sakit", options: ["健康", "生病", "累", "饿", "渴", "饱", "睡觉", "起床"], correct: "生病" },
+            { id: "q24", text: "rumah sakit", options: ["学校", "医院", "药店", "诊所", "药房", "卫生所", "办公室", "市场"], correct: "医院" },
+            { id: "q25", text: "berangin", options: ["下雨", "热", "冷", "刮风", "多云", "晴天", "阴天", "下雪"], correct: "刮风" },
+            { id: "q26", text: "hujan", options: ["热", "下雨", "冷", "风", "雪", "晴", "阴", "云"], correct: "下雨" },
+            { id: "q27", text: "keluar", options: ["进来", "出去", "上", "下", "回家", "去", "来", "回"], correct: "出去" },
+            { id: "q28", text: "masuk", options: ["出去", "进来", "上", "下", "去", "  家", "来", "回"], correct: "进来" },
+            { id: "q29", text: "nama", options: ["年龄", "名字", "地址", "工作", "爱好", "家人", "朋友", "学校"], correct: "名字" },
+            { id: "q30", text: "HP", options: ["电脑", "电话", "手机", "电视", "收音机", "相机", "手表", "平板"], correct: "手机" },
+            { id: "q31", text: "kue", options: ["面包", "蛋糕", "米饭", "面条", "粥", "饼干", "糖果", "巧克力"], correct: "蛋糕" },
+            { id: "q32", text: "meja", options: ["椅子", "桌子", "柜子", "床", "门", "窗户", "墙", "地板"], correct: "桌子" },
+            { id: "q33", text: "ruang kelas", options: ["办公室", "教室", "图书馆", "试验室", "礼堂", "食堂", "厕所", "公园"], correct: "教室" },
+            { id: "q34", text: "rok", options: ["裤子", "裙子", "衣服", "鞋子", "帽子", "包", "袜子", "外套"], correct: "裙子" },
+            { id: "q35", text: "baju", options: ["鞋子", "衣服", "裤子", "帽子", "包", "袜子", "手套", "围巾"], correct: "衣服" },
+            { id: "q36", text: "tas sekolah", options: ["书", "书包", "铅笔", "橡皮", "尺子", "钢笔", "纸", "桌子"], correct: "书包" },
+            { id: "q37", text: "takut", options: ["高兴", "难过", "害怕", "生气", "着急", "累", "饿", "渴"], correct: "害怕" },
+            { id: "q38", text: "sedih", options: ["高兴", "难过", "生气", "害怕", "着急", "开心", "累", "饿"], correct: "难过" },
+            { id: "q39", text: "senang", options: ["难过", "开心", "生气", "害怕", "着急", "累", "饿", "渴"], correct: "开心" },
+            { id: "q40", text: "lelah", options: ["饿", "渴", "累", "饱", "健康", "生病", "高兴", "难过"], correct: "累" }
+        ];
+
+        const sentenceQuestions = [
+            { id: "s1", text: "请___门。(Tolong buka pintu)", options: ["开", "关", "看", "听", "说", "写", "读", "坐"], correct: "开" },
+            { id: "s2", text: "请___门。(Tolong tutup pintu)", options: ["开", "关", "看", "去", "来", "坐", "站", "睡"], correct: "关" },
+            { id: "s3", text: "请别___声说话。(Tolong jangan bicara keras)", options: ["小", "大", "高", "低", "快", "慢", "多", "少"], correct: "大" },
+            { id: "s4", text: "我在___我的猫。(Saya sedang mencari kucing saya)", options: ["找", "看", "买", "卖", "带", "吃", "喝", "玩"], correct: "找" },
+            { id: "s5", text: "我养了一只___。(Saya pelihara seekor kucing)", options: ["狗", "猫", "鸟", "鱼", "兔", "鸡", "鸭", "马"], correct: "猫" },
+            { id: "s6", text: "我的书___了。(Buku saya hilang)", options: ["找到", "丢", "买", "卖", "看", "读", "写", "带"], correct: "丢" },
+            { id: "s7", text: "我很___，快迟到了！(Saya sangat cemas, hampir terlambat!)", options: ["高兴", "难过", "着急", "生气", "害怕", "开心", "累", "饿"], correct: "着急" },
+            { id: "s8", text: "妈妈在___做饭。(Ibu sedang memasak di dapur)", options: ["卧室", "客厅", "厨房", "卫生间", "餐厅", "花园", "教室", "办公室"], correct: "厨房" },
+            { id: "s9", text: "他是我的好___。(Dia adalah teman baik saya)", options: ["老师", "朋友", "医生", "学生", "邻居", "客人", "家人", "亲戚"], correct: "朋友" },
+            { id: "s10", text: "我们是___。(Kami adalah teman sekelas)", options: ["老师", "学生", "同学", "朋友", "家人", "邻居", "亲戚", "同事"], correct: "同学" },
+            { id: "s11", text: "我很___见到你。(Saya sangat senang bertemu kamu)", options: ["难过", "生气", "高兴", "害怕", "着急", "累", "饿", "渴"], correct: "高兴" },
+            { id: "s12", text: "我___我的钥匙了！(Saya menemukan kunci saya!)", options: ["找", "找到", "丢", "买", "卖", "看", "拿", "放"], correct: "找到" },
+            { id: "s13", text: "妈妈正在___。(Ibu sedang memasak)", options: ["吃饭", "喝水", "做饭", "睡觉", "学习", "工作", "玩", "看书"], correct: "做饭" },
+            { id: "s14", text: "天下雨了，___我带伞了。(Hujan turun, jadi saya bawa payung)", options: ["因为", "所以", "但是", "或者", "如果", "虽然", "因此", "然后"], correct: "所以" },
+            { id: "s15", text: "明天___会下雨。(Besok pasti akan hujan)", options: ["可能", "一定", "不", "没有", "还没", "已经", "正在", "刚才"], correct: "一定" },
+            { id: "s16", text: "上课的时候___说话。(kurangi berbicara saat sedang belajar)", options: ["多", "少", "很", "太", "非常", "十分", "特别", "最"], correct: "少" },
+            { id: "s17", text: "这里有很___人。(Di sini ada sangant banyak orang)", options: ["少", "多", "几", "一些", "有的", "某些", "各", "每"], correct: "多" },
+            { id: "s18", text: "我要写___。(Saya harus mengerjakan PR)", options: ["书", "课", "作业", "考试", "报告", "笔记", "信", "字"], correct: "作业" },
+            { id: "s19", text: "我在___看书。(Saya sedang membaca di perpustakaan)", options: ["学校", "图书馆", "书店", "教室", "办公室", "家", "公园", "商店"], correct: "图书馆" },
+            { id: "s20", text: "不要___！(Jangan bicara!)", options: ["写字", "读书", "说话", "听课", "看书", "学习", "工作", "玩"], correct: "说话" },
+            { id: "s21", text: "她喜欢___。(Dia suka menyanyi)", options: ["跳舞", "唱歌", "画画", "运动", "跑步", "游泳", "玩", "看"], correct: "唱歌" },
+            { id: "s22", text: "我___了。(Saya sakit)", options: ["健康", "生病", "累", "饿", "渴", "困", "忙", "闲"], correct: "生病" },
+            { id: "s23", text: "我要去___看病。(Saya mau pergi ke rumah sakit berobat)", options: ["学校", "医院", "药店", "诊所", "商店", "公园", "家", "办公室"], correct: "医院" },
+            { id: "s24", text: "今天___。(Hari ini berangin)", options: ["下雨", "很热", "很冷", "刮风", "多云", "晴天", "阴天", "下雪"], correct: "刮风" },
+            { id: "s25", text: "外面___了。(Di luar hujan)", options: ["热", "下雨", "冷", "风", "雪", "晴", "阴", "云"], correct: "下雨" },
+            { id: "s26", text: "我要___玩。(Saya mau keluar main)", options: ["进来", "出去", "上去", "下来", "回家", "回来", "过去", "过来"], correct: "出去" },
+            { id: "s27", text: "请___。(Silakan masuk)", options: ["出去", "进来", "上去", "下来", "回去", "过去", "起来", "下去"], correct: "进来" },
+            { id: "s28", text: "你叫什么___？(Siapa namamu?)", options: ["年龄", "名字", "地址", "工作", "爱好", "专业", "职业", "电话"], correct: "名字" },
+            { id: "s29", text: "我的___在哪里？(HP saya di mana?)", options: ["电脑", "电话", "手机", "电视", "相机", "钥匙", "书", "包"], correct: "手机" },
+            { id: "s30", text: "我喜欢吃___。(Saya suka makan kue)", options: ["面包", "蛋糕", "米饭", "面条", "粥", "饼干", "糖果", "巧克力"], correct: "蛋糕" },
+            { id: "s31", text: "请别坐在___上。(tolong jangan duduk di meja)", options: ["椅子", "桌子", "柜子", "床", "地上", "沙发", "凳子", "地板"], correct: "桌子" },
+            { id: "s32", text: "学生在___上课。(Siswa sedang belajar di ruang kelas)", options: ["办公室", "教室", "图书馆", "实验室", "礼堂", "食堂", "操场", "公园"], correct: "教室" },
+            { id: "s33", text: "她穿着___。(Dia memakai rok)", options: ["裤子", "裙子", "衣服", "鞋子", "帽子", "袜子", "外套", "围巾"], correct: "裙子" },
+            { id: "s34", text: "这是我的___。(Ini baju saya)", options: ["鞋子", "衣服", "裤子", "帽子", "包", "袜子", "手套", "围巾"], correct: "衣服" },
+            { id: "s35", text: "我的___很重。(Tas sekolah saya sangat berat)", options: ["书", "书包", "笔", "本子", "铅笔", "橡皮", "尺子", "包"], correct: "书包" },
+            { id: "s36", text: "我___黑暗。(Saya takut gelap)", options: ["高兴", "难过", "害怕", "生气", "着急", "喜欢", "爱", "想"], correct: "害怕" },
+            { id: "s37", text: "我很___。(Saya sangat sedih)", options: ["高兴", "难过", "生气", "害怕", "着急", "开心", "快乐", "幸福"], correct: "难过" },
+            { id: "s38", text: "我今天很___。(Saya hari ini sangat senang)", options: ["难过", "开心", "生气", "害怕", "着急", "累", "饿", "渴"], correct: "开心" },
+            { id: "s39", text: "我太___了。(Saya terlalu lelah)", options: ["饿", "渴", "累", "饱", "困", "忙", "闲", "急"], correct: "累" },
+            { id: "s40", text: "我每天___学习。(Saya belajar di perpustakaan setiap hari)", options: ["在家", "在学校", "在图书馆", "在教室", "在外面", "在这里", "在那里", "在公园"], correct: "在图书馆" }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let answered = false;
+        let shuffledQuestions = [];
+        let timerInterval = null;
+        let timeRemaining = 10;
+        let currentMode = 'vocabulary'; // 'vocabulary' or 'sentence'
+
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        function playCorrectSound() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+            oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // E5
+            oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2); // G5
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.5);
+        }
+
+        function playIncorrectSound() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(300, audioContext.currentTime);
+            oscillator.frequency.setValueAtTime(200, audioContext.currentTime + 0.2);
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.4);
+        }
+
+        function playTickSound() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.1);
+        }
+
+        function createConfetti() {
+            const colors = ['#ff6b6b', '#4ecdc4', '#ffd93d', '#a8e6cf', '#ff9ff3', '#48dbfb', '#ffb703', '#ee5a6f'];
+            const confettiCount = 50;
+            const container = document.querySelector('.game-area');
+
+            for (let i = 0; i < confettiCount; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = '-10px';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animation = `confettiFall ${2 + Math.random() * 2}s linear forwards`;
+                confetti.style.animationDelay = Math.random() * 0.3 + 's';
+                container.appendChild(confetti);
+
+                setTimeout(() => confetti.remove(), 4000);
+            }
+        }
+
+        function showBigX() {
+            const bigX = document.createElement('div');
+            bigX.className = 'big-x';
+            bigX.textContent = '  ';
+            document.querySelector('.game-area').appendChild(bigX);
+
+            setTimeout(() => bigX.remove(), 1500);
+        }
+
+        const dataHandler = {
+            onDataChanged(data) {
+                // Data is tracked but not displayed in this game
+            }
+        };
+
+        async function initializeApp() {
+            if (window.dataSdk) {
+                const result = await window.dataSdk.init(dataHandler);
+                if (!result.isOk) {
+                    console.error("Data SDK initialization failed");
+                }
+            }
+
+            if (window.elementSdk) {
+                await window.elementSdk.init({
+                    defaultConfig,
+                    onConfigChange,
+                    mapToCapabilities,
+                    mapToEditPanelValues
+                });
+            }
+
+            setupEventListeners();
+        }
+
+        async function onConfigChange(config) {
+            const title = config.game_title || defaultConfig.game_title;
+            const subtitle = config.game_subtitle || defaultConfig.game_subtitle;
+            const instruction = config.instruction_text || defaultConfig.instruction_text;
+            const startBtn = config.start_button_text || defaultConfig.start_button_text;
+            const nextBtn = config.next_button_text || defaultConfig.next_button_text;
+            const resultsTitle = config.results_title || defaultConfig.results_title;
+            const restartBtn = config.restart_button_text || defaultConfig.restart_button_text;
+            const bgColor = config.background_color || defaultConfig.background_color;
+            const primaryColor = config.primary_action_color || defaultConfig.primary_action_color;
+            const secondaryColor = config.secondary_action_color || defaultConfig.secondary_action_color;
+
+            document.getElementById('gameTitle').textContent = title;
+            document.getElementById('gameSubtitle').textContent = subtitle;
+            document.getElementById('instructionText').textContent = instruction;
+            document.getElementById('startButton').textContent = startBtn;
+            document.getElementById('nextButton').textContent = nextBtn;
+            document.getElementById('resultsTitle').textContent = resultsTitle;
+            document.getElementById('restartButton').textContent = restartBtn;
+
+            document.body.style.background = `linear-gradient(135deg, ${bgColor} 0%, #764ba2 100%)`;
+            
+            const primaryBtns = document.querySelectorAll('.btn-primary');
+            primaryBtns.forEach(btn => {
+                btn.style.background = `linear-gradient(135deg, ${primaryColor} 0%, #764ba2 100%)`;
+            });
+
+            const secondaryBtns = document.querySelectorAll('.btn-secondary');
+            secondaryBtns.forEach(btn => {
+                btn.style.background = secondaryColor;
+            });
+
+            const progressFill = document.getElementById('progressBar');
+            progressFill.style.background = `linear-gradient(90deg, ${primaryColor} 0%, #764ba2 100%)`;
+        }
+
+        function mapToCapabilities(config) {
+            return {
+                recolorables: [
+                    {
+                        get: () => config.background_color || defaultConfig.background_color,
+                        set: (value) => {
+                            if (window.elementSdk) {
+                                window.elementSdk.setConfig({ background_color: value });
+                            }
+                        }
+                    },
+                    {
+                        get: () => config.primary_action_color || defaultConfig.primary_action_color,
+                        set: (value) => {
+                            if (window.elementSdk) {
+                                window.elementSdk.setConfig({ primary_action_color: value });
+                            }
+                        }
+                    },
+                    {
+                        get: () => config.secondary_action_color || defaultConfig.secondary_action_color,
+                        set: (value) => {
+                            if (window.elementSdk) {
+                                window.elementSdk.setConfig({ secondary_action_color: value });
+                            }
+                        }
+                    }
+                ],
+                borderables: [],
+                fontEditable: undefined,
+                fontSizeable: undefined
+            };
+        }
+
+        function mapToEditPanelValues(config) {
+            return new Map([
+                ["game_title", config.game_title || defaultConfig.game_title],
+                ["game_subtitle", config.game_subtitle || defaultConfig.game_subtitle],
+                ["instruction_text", config.instruction_text || defaultConfig.instruction_text],
+                ["start_button_text", config.start_button_text || defaultConfig.start_button_text],
+                ["next_button_text", config.next_button_text || defaultConfig.next_button_text],
+                ["results_title", config.results_title || defaultConfig.results_title],
+                ["restart_button_text", config.restart_button_text || defaultConfig.restart_button_text]
+            ]);
+        }
+
+        function setupEventListeners() {
+            document.getElementById('vocabButton').addEventListener('click', () => startGame('vocabulary'));
+            document.getElementById('sentenceButton').addEventListener('click', () => startGame('sentence'));
+            document.getElementById('nextButton').addEventListener('click', nextQuestion);
+            document.getElementById('restartButton').addEventListener('click', restartGame);
+
+            const gameArea = document.querySelector('.game-area');
+            gameArea.addEventListener('mouseenter', () => {
+                document.getElementById('arrowCursor').style.display = 'block';
+            });
+            gameArea.addEventListener('mouseleave', () => {
+                document.getElementById('arrowCursor').style.display = 'none';
+            });
+            gameArea.addEventListener('mousemove', (e) => {
+                const arrow = document.getElementById('arrowCursor');
+                arrow.style.left = e.clientX + 'px';
+                arrow.style.top = e.clientY + 'px';
+            });
+        }
+
+        function startGame(mode) {
+            currentMode = mode;
+            currentQuestionIndex = 0;
+            score = 0;
+            
+            if (mode === 'vocabulary') {
+                shuffledQuestions = shuffleArray(vocabularyQuestions);
+            } else {
+                shuffledQuestions = shuffleArray(sentenceQuestions);
+            }
+            
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('questionScreen').style.display = 'flex';
+            showQuestion();
+        }
+
+        function showQuestion() {
+            answered = false;
+            timeRemaining = 10;
+            const question = shuffledQuestions[currentQuestionIndex];
+            
+            const modeText = currentMode === 'vocabulary' ? 'Kosakata' : 'Kalimat';
+            document.getElementById('questionNumber').textContent = `Soal ${modeText} ${currentQuestionIndex + 1} dari ${shuffledQuestions.length}`;
+            
+            const questionTextElement = document.getElementById('questionText');
+            questionTextElement.textContent = question.text;
+            questionTextElement.className = currentMode === 'vocabulary' ? 'question-text vocabulary-mode' : 'question-text sentence-mode';
+            
+            document.getElementById('nextButtonContainer').style.display = 'none';
+
+            const progress = ((currentQuestionIndex) / shuffledQuestions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+
+            const timerElement = document.getElementById('timer');
+            timerElement.textContent = timeRemaining;
+            timerElement.classList.remove('warning');
+
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                timerElement.textContent = timeRemaining;
+
+                if (timeRemaining <= 3) {
+                    timerElement.classList.add('warning');
+                    playTickSound();
+                }
+
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    if (!answered) {
+                        handleTimeout();
+                    }
+                }
+            }, 1000);
+
+            const balloonsArea = document.getElementById('balloonsArea');
+            balloonsArea.innerHTML = '';
+
+            const shuffledOptions = shuffleArray(question.options);
+
+            shuffledOptions.forEach((option, index) => {
+                const balloon = document.createElement('div');
+                balloon.className = 'balloon';
+                balloon.innerHTML = `
+                    <div class="balloon-body">
+                        <div class="balloon-text">${option}</div>
+                    </div>
+                    <div class="balloon-string"></div>
+                `;
+                balloon.addEventListener('click', () => selectAnswer(option, balloon));
+                balloonsArea.appendChild(balloon);
+            });
+        }
+
+        function handleTimeout() {
+            answered = true;
+            playIncorrectSound();
+            showBigX();
+
+            const feedback = document.createElement('div');
+            feedback.className = 'feedback incorrect';
+            feedback.textContent = '⏰ Waktu Habis!';
+            document.querySelector('.balloons-area').appendChild(feedback);
+
+            const question = shuffledQuestions[currentQuestionIndex];
+            
+            if (window.dataSdk) {
+                window.dataSdk.create({
+                    question_id: question.id,
+                    hanzi: question.text,
+                    user_answer: "TIMEOUT",
+                    is_correct: false,
+                    answered_at: new Date().toISOString()
+                });
+            }
+
+            setTimeout(() => {
+                feedback.remove();
+                if (currentQuestionIndex < shuffledQuestions.length - 1) {
+                    document.getElementById('nextButtonContainer').style.display = 'flex';
+                } else {
+                    showResults();
+                }
+            }, 1500);
+        }
+
+        async function selectAnswer(selectedOption, balloonElement) {
+            if (answered) return;
+            answered = true;
+
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+
+            const question = shuffledQuestions[currentQuestionIndex];
+            const isCorrect = selectedOption === question.correct;
+
+            balloonElement.classList.add('popped');
+
+            const feedback = document.createElement('div');
+            feedback.className = `feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+            feedback.textContent = isCorrect ? '✓ Benar!' : '✗ Salah!';
+            document.querySelector('.balloons-area').appendChild(feedback);
+
+            if (isCorrect) {
+                score++;
+                createConfetti();
+                playCorrectSound();
+            } else {
+                showBigX();
+                playIncorrectSound();
+            }
+
+            if (window.dataSdk) {
+                const loadingBtn = document.getElementById('nextButton');
+                loadingBtn.disabled = true;
+                loadingBtn.classList.add('loading');
+
+                const result = await window.dataSdk.create({
+                    question_id: question.id,
+                    hanzi: question.text,
+                    user_answer: selectedOption,
+                    is_correct: isCorrect,
+                    answered_at: new Date().toISOString()
+                });
+
+                loadingBtn.disabled = false;
+                loadingBtn.classList.remove('loading');
+
+                if (!result.isOk) {
+                    console.error("Failed to save answer");
+                }
+            }
+
+            setTimeout(() => {
+                feedback.remove();
+                if (currentQuestionIndex < shuffledQuestions.length - 1) {
+                    document.getElementById('nextButtonContainer').style.display = 'flex';
+                } else {
+                    showResults();
+                }
+            }, 1500);
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            showQuestion();
+        }
+
+        function showResults() {
+            document.getElementById('questionScreen').style.display = 'none';
+            document.getElementById('resultsScreen').style.display = 'flex';
+            document.getElementById('scoreDisplay').textContent = `${score}/${shuffledQuestions.length}`;
+            document.getElementById('progressBar').style.width = '100%';
+        }
+
+        function restartGame() {
+            document.getElementById('resultsScreen').style.display = 'none';
+            document.getElementById('startScreen').style.display = 'flex';
+            document.getElementById('progressBar').style.width = '0%';
+        }
+
+        initializeApp();
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a1bd630436ae5ce',t:'MTc2MzY4MjQ5MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
